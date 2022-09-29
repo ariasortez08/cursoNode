@@ -43,17 +43,98 @@ const data = fs.readFileSync(
 );
 
 //PARSEAMOS EL JSON a UN STRING
-// const dataObject = JSON.parse(data);
+const dataObject = JSON.parse(data);
+
+
+//Cargamos las template UNA VEZ
+
+const tempOverview = fs.readFileSync(
+  `${__dirname}/starter/templates/template-overview.html`,
+  'utf-8'
+);
+
+const tempProducts = fs.readFileSync(
+  `${__dirname}/starter/templates/template-product.html`,
+  'utf-8'
+);
+
+const tempCards = fs.readFileSync(
+  `${__dirname}/starter/templates/template-card.html`,
+  'utf-8'
+);
+
+
+
+
+// ! Funcion para navegar entre las templates
+
+const replaceTemplate = (temp, product) => {
+  let output = temp.replace(/{%PRODUCT_NAME%}/g, product.productName);
+  output = output.replace(/{%PRODUCT_IMAGE%}/g, product.image);
+  output = output.replace(/{%PRODUCT_PRICE%}/g, product.price);
+  output = output.replace(/{%PRODUCT_FROM%}/g, product.from);
+  output = output.replace(/{%PRODUCT_NUTRIENTS%}/g, product.nutrients);
+  output = output.replace(/{%PRODUCT_QUANTITY%}/g, product.quantity);
+  output = output.replace(/{%PRODUCT_DESCRIPTION%}/g, product.description);
+  output = output.replace(/{%PRODUCT_ID%}/g, product.id);
+
+  if (!product.organic)
+    output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
+
+  return output;
+
+
+}
 
 // ! Create the server
 
 const server = http.createServer((req, res) => {
-  const pathName = req.url;
-  if (pathName === '/overview' || pathName === '/') {
-    res.write('Welcome to the OVERVIEW');
-  } else if (pathName === '/product') {
-    res.write('Welcome to the PRODUCT');
-  } else if (pathName === '/api') {
+
+  // ! Recibimos el PATH de URL
+
+  const { query, pathname } = url.parse(req.url, true);
+
+  console.log(pathname);
+  console.log(query);
+
+  console.log((url.parse(req.url, true)));
+
+
+
+  //  OVERVIEW PAGE
+  if (pathname === '/overview' || pathname === '/') {
+
+    res.writeHead(200, {
+      'Content-type': 'text/html',
+    });
+
+
+
+
+    const cardsHTML = dataObject.map(el => replaceTemplate(tempCards, el)).join('');
+    const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHTML);
+    res.write(output);
+
+    // PRODUCT PAGE
+
+  } else if (pathname === '/product') {
+
+    /*Recoremos el objeto con un ARRAY 
+    Buscamos el ID */
+    res.writeHead(200, {
+      'Content-type': 'text/html',
+    });
+    const product = dataObject[query.id];
+    const output = replaceTemplate(tempProducts, product);
+
+
+
+    res.write(output);
+
+    // API PAGE 
+
+
+  } else if (pathname === '/api') {
     // LEER EL JSON FILE
     // res.write('API');
     /*
@@ -62,8 +143,14 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, {
       'Content-type': 'application/json',
     });
-    //Data Recibida por parte del file, y escrita en la pagina.
+
+    // ? Data Recibida por parte del file, y escrita en la pagina.
+
     res.write(data);
+
+    // PAGE NOT FOUND
+
+
   } else {
     res.writeHead(404, {
       'Content-type': 'text/html', // ? Podemos especificar el tipo de contenido que vamos a enviar
