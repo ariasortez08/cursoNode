@@ -5,7 +5,9 @@ const path = require('path');
 
 const url = require('url');
 
-const replaceTemplate = require('./starter/modules/replaceTemplates')
+const slugify = require('slugify');
+
+const replaceTemplate = require('./starter/modules/replaceTemplates');
 
 console.clear();
 
@@ -47,7 +49,6 @@ const data = fs.readFileSync(
 //PARSEAMOS EL JSON a UN STRING
 const dataObject = JSON.parse(data);
 
-
 //Cargamos las template UNA VEZ
 
 const tempOverview = fs.readFileSync(
@@ -64,9 +65,6 @@ const tempCards = fs.readFileSync(
   `${__dirname}/starter/templates/template-card.html`,
   'utf-8'
 );
-
-
-
 
 // ! Funcion para navegar entre las templates
 
@@ -88,10 +86,11 @@ const tempCards = fs.readFileSync(
 
 } */
 
+const slugs = dataObject.map((s) => slugify(s.productName, { lower: true }));
+console.log(slugs);
 // ! Create the server
 
 const server = http.createServer((req, res) => {
-
   // ! Recibimos el PATH de URL
 
   const { query, pathname } = url.parse(req.url, true);
@@ -99,28 +98,22 @@ const server = http.createServer((req, res) => {
   console.log(pathname);
   console.log(query);
 
-  console.log((url.parse(req.url, true)));
-
-
+  console.log(url.parse(req.url, true));
 
   //  OVERVIEW PAGE
   if (pathname === '/overview' || pathname === '/') {
-
     res.writeHead(200, {
       'Content-type': 'text/html',
     });
 
-
-
-
-    const cardsHTML = dataObject.map(el => replaceTemplate(tempCards, el)).join('');
+    const cardsHTML = dataObject
+      .map((el) => replaceTemplate(tempCards, el))
+      .join('');
     const output = tempOverview.replace('{%PRODUCT_CARDS%}', cardsHTML);
     res.write(output);
 
     // PRODUCT PAGE
-
   } else if (pathname === '/product') {
-
     /*Recoremos el objeto con un ARRAY 
     Buscamos el ID */
     res.writeHead(200, {
@@ -129,13 +122,9 @@ const server = http.createServer((req, res) => {
     const product = dataObject[query.id];
     const output = replaceTemplate(tempProducts, product);
 
-
-
     res.write(output);
 
-    // API PAGE 
-
-
+    // API PAGE
   } else if (pathname === '/api') {
     // LEER EL JSON FILE
     // res.write('API');
@@ -151,8 +140,6 @@ const server = http.createServer((req, res) => {
     res.write(data);
 
     // PAGE NOT FOUND
-
-
   } else {
     res.writeHead(404, {
       'Content-type': 'text/html', // ? Podemos especificar el tipo de contenido que vamos a enviar
