@@ -5,6 +5,8 @@ const path = require('path');
 
 const url = require('url');
 
+const replaceTemplate = require('./starter/modules/replaceTemplates')
+
 console.clear();
 
 // ! Blocking, SYNCHRONOUS WAY
@@ -68,7 +70,7 @@ const tempCards = fs.readFileSync(
 
 // ! Funcion para navegar entre las templates
 
-const replaceTemplate = (temp, product) => {
+/* const replaceTemplate = (temp, product) => {
   let output = temp.replace(/{%PRODUCT_NAME%}/g, product.productName);
   output = output.replace(/{%PRODUCT_IMAGE%}/g, product.image);
   output = output.replace(/{%PRODUCT_PRICE%}/g, product.price);
@@ -84,7 +86,7 @@ const replaceTemplate = (temp, product) => {
   return output;
 
 
-}
+} */
 
 // ! Create the server
 
