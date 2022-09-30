@@ -29,16 +29,26 @@ const getDogPic = async () => {
     console.log(`Breed: ${data}`);
     let url = `https://dog.ceo/api/breed/${data}/images/random`;
 
-    const res = await superAgent.get(url);
+    const res1Pro = superAgent.get(url);
+    const res2Pro = superAgent.get(url);
+    const res3Pro = superAgent.get(url);
 
-    await writeFilePro('dog-im.txt', res.body.message);
+    const all = await Promise.all([res1Pro, res2Pro, res3Pro]);
+    const imgs = all.map((el) => el.body.message);
+    console.log(imgs);
+
+    await writeFilePro('dog-im.txt', imgs.join('\n'));
     console.log('Success');
-  } catch (error) {
-    console.log('Dog not found!');
+  } catch (err) {
+    console.log(err);
   }
+  return '2: Ready ';
 };
 
-getDogPic();
+//Asi podemos guardar un return de una promesa en una variable
+getDogPic().then((x) => {
+  console.log(x);
+});
 
 // * EJEMPLO DE PROMESA
 
