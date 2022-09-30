@@ -34,6 +34,8 @@ const getDogPic = async () => {
   console.log('Success');
 };
 
+getDogPic();
+
 // * EJEMPLO DE PROMESA
 
 /* readFilePro(`${__dirname}/starter/dog.txt`)

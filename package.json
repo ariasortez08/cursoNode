@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/ariasortez08/cursoNode/issues"
   },
-  "homepage": "https://github.com/ariasortez08/cursoNode#readme"
+  "homepage": "https://github.com/ariasortez08/cursoNode#readme",
+  "dependencies": {
+    "superagent": "^8.0.1"
+  }
 }
